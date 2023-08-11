@@ -129,6 +129,17 @@ class File
         $this->dirty();
     }
 
+    public function removeBlankLinesAround(int $number): void
+    {
+        if (trim($this->line($number - 1)) === '') {
+            $this->removeBlankLinesBefore($number);
+
+            return;
+        }
+
+        $this->removeBlankLinesAfter($number);
+    }
+
     public function removeBlankLinesBefore(int $start): void
     {
         while (trim($this->line($start - 1)) === '') {

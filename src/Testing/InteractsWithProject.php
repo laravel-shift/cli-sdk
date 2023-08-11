@@ -14,7 +14,7 @@ trait InteractsWithProject
 
     public static function setUpBeforeClass(): void
     {
-        if (!SnapshotState::$purged) {
+        if (! SnapshotState::$purged) {
             $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(self::snapshotsPath()), \RecursiveIteratorIterator::CHILD_FIRST);
 
             foreach ($files as $file) {
@@ -52,7 +52,7 @@ trait InteractsWithProject
         mkdir($project);
 
         foreach ($this->structure as $src => $fixture) {
-            if (!is_dir($project . DIRECTORY_SEPARATOR . dirname($src))) {
+            if (! is_dir($project . DIRECTORY_SEPARATOR . dirname($src))) {
                 mkdir($project . DIRECTORY_SEPARATOR . dirname($src), recursive: true);
             }
 
@@ -111,7 +111,7 @@ trait InteractsWithProject
 
     private function currentSnapshotPath(): string
     {
-        if (!isset($this->uid)) {
+        if (! isset($this->uid)) {
             $caller = debug_backtrace(0, 3)[2];
             $this->uid = md5($caller['class'] . '::' . $caller['function'] . '::' . serialize($caller['args']));
         }
