@@ -14,8 +14,20 @@ trait InteractsWithProject
 
     public static function setUpBeforeClass(): void
     {
-        if (! SnapshotState::$purged) {
-            exec('find ' . __DIR__ . DIRECTORY_SEPARATOR . 'snapshots -mindepth 1 -maxdepth 1 -type d -exec rm -r {} +');
+        if (!SnapshotState::$purged) {
+            $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(self::snapshotsPath()), \RecursiveIteratorIterator::CHILD_FIRST);
+
+            foreach ($files as $file) {
+                if (in_array($file->getBasename(), ['.', '..', '.gitignore'])) {
+                    continue;
+                }
+
+                if ($file->isDir()) {
+                    rmdir($file->getPathName());
+                } elseif ($file->isFile() || $file->isLink()) {
+                    unlink($file->getPathname());
+                }
+            }
 
             SnapshotState::$purged = true;
         }
@@ -36,11 +48,11 @@ trait InteractsWithProject
     {
         $this->structure = $structure;
 
-        $project = $this->snapshotDirectory();
+        $project = $this->currentSnapshotPath();
         mkdir($project);
 
         foreach ($this->structure as $src => $fixture) {
-            if (! is_dir($project . DIRECTORY_SEPARATOR . dirname($src))) {
+            if (!is_dir($project . DIRECTORY_SEPARATOR . dirname($src))) {
                 mkdir($project . DIRECTORY_SEPARATOR . dirname($src), recursive: true);
             }
 
@@ -53,7 +65,7 @@ trait InteractsWithProject
         }
 
         $this->cwd = getcwd();
-        chdir($this->snapshotDirectory());
+        chdir($this->currentSnapshotPath());
     }
 
     public function assertFileChanges(string $expected, string $actual): void
@@ -94,16 +106,30 @@ trait InteractsWithProject
 
     private function fixturePath(string $fixture)
     {
-        return __DIR__ . substr($fixture, 5);
+        return self::basePath() . DIRECTORY_SEPARATOR . $fixture;
     }
 
-    private function snapshotDirectory(): string
+    private function currentSnapshotPath(): string
     {
-        if (! isset($this->uid)) {
+        if (!isset($this->uid)) {
             $caller = debug_backtrace(0, 3)[2];
             $this->uid = md5($caller['class'] . '::' . $caller['function'] . '::' . serialize($caller['args']));
         }
 
-        return __DIR__ . '/snapshots/' . $this->uid;
+        return self::snapshotsPath() . DIRECTORY_SEPARATOR . $this->uid;
+    }
+
+    private static function snapshotsPath(): string
+    {
+        return self::basePath() . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR . 'snapshots';
+    }
+
+    private static function basePath(): string
+    {
+        static $path;
+
+        $path ??= dirname(__DIR__, 5);
+
+        return $path;
     }
 }
