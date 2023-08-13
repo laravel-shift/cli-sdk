@@ -8,6 +8,8 @@ class ConfigurationRepository
 
     private ?array $data = null;
 
+    private array $defaults = [];
+
     public function __construct(string $path = null)
     {
         if ($path) {
@@ -27,19 +29,14 @@ class ConfigurationRepository
         return $this->data;
     }
 
-    public function defaults(): array
+    private function defaults(): array
     {
-        return [
-            'tasks' => [
-                'anonymous-migrations',
-                'class-strings',
-                'explicit-orderby',
-                'facade-aliases',
-                'faker-methods',
-                'model-table',
-                'rules-arrays',
-            ],
-        ];
+        return $this->defaults;
+    }
+
+    public function setDefaults(array $defaults): void
+    {
+        $this->defaults = $defaults;
     }
 
     private function load(): array

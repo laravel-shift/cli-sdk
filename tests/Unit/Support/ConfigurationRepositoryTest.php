@@ -24,19 +24,21 @@ class ConfigurationRepositoryTest extends TestCase
     }
 
     #[Test]
-    public function it_returns_a_default_configuration_value()
+    public function it_returns_a_default_configuration()
     {
         $repository = new \Shift\Cli\Sdk\Support\ConfigurationRepository();
+        $repository->setDefaults(['foo' => 'bar']);
 
-        $this->assertSame($this->defaultTasks(), $repository->get('tasks'));
+        $this->assertSame('bar', $repository->get('foo'));
     }
 
     #[Test]
     public function it_loads_and_merges_values_from_config_file()
     {
         $repository = new \Shift\Cli\Sdk\Support\ConfigurationRepository('tests/fixtures/config/ignore.json');
+        $repository->setDefaults(['foo' => 'bar']);
 
-        $this->assertSame($this->defaultTasks(), $repository->get('tasks'));
+        $this->assertSame('bar', $repository->get('foo'));
         $this->assertSame(
             [
                 'tests/fixtures/',
@@ -65,18 +67,5 @@ class ConfigurationRepositoryTest extends TestCase
         $this->expectExceptionMessage('The configuration file (tests/fixtures/config/invalid.json) contains invalid JSON.');
 
         $repository->get('tasks');
-    }
-
-    private function defaultTasks(): array
-    {
-        return [
-            'anonymous-migrations',
-            'class-strings',
-            'explicit-orderby',
-            'facade-aliases',
-            'faker-methods',
-            'model-table',
-            'rules-arrays',
-        ];
     }
 }
