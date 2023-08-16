@@ -13,11 +13,11 @@ trait FindsFiles
 
     protected array $paths = [];
 
-    protected bool $dirty = false;
+    protected bool $onlyDirty = false;
 
     protected function findFiles(): array
     {
-        $this->files ??= $this->dirty ? $this->dirtyFiles() : $this->projectFiles();
+        $this->files ??= $this->onlyDirty ? $this->dirtyFiles() : $this->projectFiles();
 
         return $this->files;
     }
@@ -80,7 +80,7 @@ trait FindsFiles
 
     public function setDirty(bool $dirty): void
     {
-        $this->dirty = $dirty;
+        $this->onlyDirty = $dirty;
     }
 
     protected function subPath(): string
