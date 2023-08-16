@@ -25,6 +25,8 @@ class NikicParser
                 'endLine',
                 'startFilePos',
                 'endFilePos',
+                'startTokenPos',
+                'endTokenPos',
             ],
         ]);
         $parser = (new ParserFactory())->create(ParserFactory::ONLY_PHP7, $lexer);
