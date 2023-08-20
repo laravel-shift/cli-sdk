@@ -6,7 +6,7 @@ use Illuminate\Support\Arr;
 
 class Reflector
 {
-    private static bool $autoloaded = false;
+    private bool $autoloaded = false;
 
     private string $cwd;
 
@@ -14,9 +14,28 @@ class Reflector
     {
         $this->cwd = $cwd;
 
-        if (! self::$autoloaded) {
+        if (! $this->autoloaded) {
             $this->autoloadProject();
         }
+    }
+
+    public function fqcnFromPath($path): ?string
+    {
+        if (str_starts_with($path, $this->cwd . DIRECTORY_SEPARATOR)) {
+            $path = substr($path, strlen($this->cwd . DIRECTORY_SEPARATOR));
+        }
+
+        [$source, $namespace] = $this->findNamespace($path);
+
+        if (is_null($source)) {
+            return null;
+        }
+
+        return str_replace(
+            [$source, DIRECTORY_SEPARATOR],
+            [$namespace, '\\'],
+            substr($path, 0, -4)
+        );
     }
 
     public function classFromPath(string $path): ?\ReflectionClass
@@ -37,7 +56,7 @@ class Reflector
 
     private function autoloadProject(): void
     {
-        self::$autoloaded = true;
+        $this->autoloaded = true;
 
         if (file_exists($this->cwd . '/vendor/autoload.php')) {
             require_once $this->cwd . '/vendor/autoload.php';
@@ -69,24 +88,5 @@ class Reflector
         }
 
         return $namespaces;
-    }
-
-    private function fqcnFromPath($path): ?string
-    {
-        if (str_starts_with($path, $this->cwd . DIRECTORY_SEPARATOR)) {
-            $path = substr($path, strlen($this->cwd . DIRECTORY_SEPARATOR));
-        }
-
-        [$source, $namespace] = $this->findNamespace($path);
-
-        if (is_null($source)) {
-            return null;
-        }
-
-        return str_replace(
-            [$source, DIRECTORY_SEPARATOR],
-            [$namespace, '\\'],
-            substr($path, 0, -4)
-        );
     }
 }

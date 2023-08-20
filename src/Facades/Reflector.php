@@ -4,6 +4,7 @@ namespace Shift\Cli\Sdk\Facades;
 
 /**
  * @method static \ReflectionClass|null classFromPath(string $path)
+ * @method static string|null fqcnFromPath(string $path)
  *
  * @see \Shift\Cli\Sdk\Support\Reflector
  */
