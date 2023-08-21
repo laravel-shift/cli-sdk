@@ -12,6 +12,11 @@ use Shift\Cli\Sdk\Support\CommentRepository;
  */
 class Comment extends Facade
 {
+    public static function break(): string
+    {
+        return PHP_EOL . PHP_EOL;
+    }
+
     protected static function getFacadeAccessor()
     {
         return Comment::class;

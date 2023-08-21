@@ -34,7 +34,10 @@ class Comment
 
     public function paths(): array
     {
-        return $this->paths;
+        return array_map(
+            fn ($path) => str_starts_with($path, getcwd()) ? substr($path, strlen(getcwd() . DIRECTORY_SEPARATOR)) : $path,
+            $this->paths
+        );
     }
 
     public function reference(): ?string
