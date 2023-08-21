@@ -34,6 +34,9 @@ class ClassDefinition
         return [
             'line' => ['start' => $comments[0]->getStartLine(), 'end' => $comments[$last]->getEndLine()],
             'offset' => ['start' => $comments[0]->getStartFilePos(), 'end' => $comments[$last]->getEndFilePos()],
+            'text' => array_reduce($comments, function ($carry, $comment) {
+                return $carry . $comment->getText();
+            }, ''),
         ];
     }
 
