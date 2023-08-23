@@ -13,6 +13,10 @@ class ClassDefinition
 
     public function process(array $instances)
     {
+        if (empty($instances)) {
+            return [];
+        }
+
         return [
             'line' => ['start' => $instances[0]->getStartLine(), 'end' => $instances[0]->getEndLine()],
             'offset' => ['start' => $instances[0]->getStartFilePos(), 'end' => $instances[0]->getEndFilePos()],
@@ -69,6 +73,7 @@ class ClassDefinition
                 'name' => $name,
                 'visibility' => $this->getVisibility($method),
                 'static' => $method->isStatic(),
+                'parameters' => $this->getParameters($method->getParams()),
             ];
         }
 
@@ -102,5 +107,27 @@ class ClassDefinition
         }
 
         return 'public';
+    }
+
+    private function getParameters(array $parameters): array
+    {
+        return collect($parameters)
+            ->mapWithKeys(function (Node\Param $parameter) {
+                return [
+                    $parameter->var->name => [
+                        'line' => ['start' => $parameter->getStartLine(), 'end' => $parameter->getEndLine()],
+                        'offset' => ['start' => $parameter->getStartFilePos(), 'end' => $parameter->getEndFilePos()],
+                        'type' => $parameter->type,
+                        'byRef' => $parameter->byRef,
+                        'variadic' => $parameter->variadic,
+                        'variable' => [
+                            'name' => $parameter->var->name,
+                            'offset' => ['start' => $parameter->var->getStartFilePos(), 'end' => $parameter->var->getEndFilePos()],
+                        ],
+                        'default' => $parameter->default,
+                    ],
+                ];
+            })
+            ->all();
     }
 }
