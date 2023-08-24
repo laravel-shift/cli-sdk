@@ -67,7 +67,8 @@ trait FindsFiles
             $finder->exclude('vendor')
                 ->in(rtrim(getcwd() . DIRECTORY_SEPARATOR . $this->subPath(), DIRECTORY_SEPARATOR))
                 ->notPath(Configuration::get('ignore', []))
-                ->name('*.php');
+                ->name('*.php')
+                ->ignoreVCSIgnored(true);
         }
 
         return array_map(fn ($file) => $file->getRealPath(), iterator_to_array($finder, false));
