@@ -27,18 +27,19 @@ class ConfigurationRepositoryTest extends TestCase
     public function it_returns_a_default_configuration()
     {
         $repository = new \Shift\Cli\Sdk\Support\ConfigurationRepository();
-        $repository->setDefaults(['foo' => 'bar']);
+        $repository->setDefaultTasks(['foo' => 'bar']);
 
-        $this->assertSame('bar', $repository->get('foo'));
+        $this->assertSame(['foo' => 'bar'], $repository->get('tasks'));
+        $this->assertSame([], $repository->get('ignore'));
     }
 
     #[Test]
     public function it_loads_and_merges_values_from_config_file()
     {
         $repository = new \Shift\Cli\Sdk\Support\ConfigurationRepository('tests/fixtures/config/ignore.json');
-        $repository->setDefaults(['foo' => 'bar']);
+        $repository->setDefaultTasks(['foo' => 'bar']);
 
-        $this->assertSame('bar', $repository->get('foo'));
+        $this->assertSame(['foo' => 'bar'], $repository->get('tasks'));
         $this->assertSame(
             [
                 'tests/fixtures/',
