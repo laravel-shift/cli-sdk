@@ -8,7 +8,7 @@ class ConfigurationRepository
 
     private ?array $data = null;
 
-    private array $defaults = [];
+    private array $tasks = [];
 
     public function __construct(string $path = null)
     {
@@ -29,14 +29,14 @@ class ConfigurationRepository
         return $this->data;
     }
 
-    private function defaults(): array
+    public function defaults(): array
     {
-        return $this->defaults;
+        return ['tasks' => $this->tasks, 'ignore' => []];
     }
 
-    public function setDefaults(array $defaults): void
+    public function setDefaultTasks(array $tasks): void
     {
-        $this->defaults = $defaults;
+        $this->tasks = $tasks;
     }
 
     private function load(): array
