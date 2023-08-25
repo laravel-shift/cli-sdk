@@ -2,6 +2,7 @@
 
 namespace Shift\Cli\Sdk\Testing;
 
+use Illuminate\Support\Str;
 use PHPUnit\Framework\Assert;
 
 trait InteractsWithProject
@@ -44,14 +45,47 @@ trait InteractsWithProject
         parent::tearDown();
     }
 
-    public function fakeProject(array $structure): void
+    public function fakeClass(string $fqcn): string
+    {
+        $namespace = Str::beforeLast($fqcn, '\\');
+        $class = Str::afterLast($fqcn, '\\');
+
+        return <<<EOT
+<?php
+
+namespace $namespace;
+
+class $class
+{
+    // ...
+}
+EOT;
+
+    }
+
+    public function fakeProject(array $structure, array $autoload = []): void
     {
         $this->structure = $structure;
 
         $project = $this->currentSnapshotPath();
         mkdir($project);
 
-        foreach ($this->structure as $src => $fixture) {
+        if (! empty($autoload)) {
+            $classmap = [];
+            foreach ($autoload as $fqcn => $fixture) {
+                $fake = preg_replace('/\W+/', '_', Str::before($fqcn, '.php')) . '.php';
+                $structure['vendor/fakes/' . $fake] = $fixture;
+                $classmap[$fqcn] = $fake;
+            }
+
+            $structure = array_merge($structure, [
+                'composer.json' => $this->composerStub(),
+                'vendor/autoload.php' => $this->autoloaderStub(),
+                'vendor/fake-classmap.json' => json_encode($classmap, JSON_PRETTY_PRINT),
+            ]);
+        }
+
+        foreach ($structure as $src => $fixture) {
             if (! is_dir($project . DIRECTORY_SEPARATOR . dirname($src))) {
                 mkdir($project . DIRECTORY_SEPARATOR . dirname($src), recursive: true);
             }
@@ -131,5 +165,40 @@ trait InteractsWithProject
         $path ??= dirname(__DIR__, 5);
 
         return $path;
+    }
+
+    private function autoloaderStub(): string
+    {
+        return <<<'EOT'
+<?php
+spl_autoload_register(function ($class) {
+    static $classes;
+
+    $classes ??= json_decode(file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . 'fake-classmap.json'), true);
+
+    if (isset($classes[$class])) {
+        require __DIR__ . DIRECTORY_SEPARATOR . 'fakes' . DIRECTORY_SEPARATOR . $classes[$class];
+    }
+
+    $file = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . str_replace(['App\\', '\\'], ['app/', DIRECTORY_SEPARATOR], $class) . '.php';
+    if (file_exists($file)) {
+        require $file;
+    }
+}, prepend: true);
+EOT;
+    }
+
+    private function composerStub(): string
+    {
+        return json_encode(
+            [
+                'autoload' => [
+                    'psr-4' => [
+                        'App\\' => 'app/',
+                    ],
+                ],
+            ],
+            JSON_PRETTY_PRINT
+        );
     }
 }
