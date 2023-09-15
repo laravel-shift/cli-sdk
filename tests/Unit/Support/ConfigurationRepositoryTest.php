@@ -34,12 +34,24 @@ class ConfigurationRepositoryTest extends TestCase
     }
 
     #[Test]
-    public function it_loads_and_merges_values_from_config_file()
+    public function it_returns_a_default_configuration_with_tasks_options()
     {
-        $repository = new \Shift\Cli\Sdk\Support\ConfigurationRepository('tests/fixtures/config/ignore.json');
-        $repository->setDefaultTasks(['foo' => 'bar']);
+        $repository = new \Shift\Cli\Sdk\Support\ConfigurationRepository();
+        $repository->setDefaultTasks(['foo' => 'bar'], ['task' => ['option' => 'value']]);
 
         $this->assertSame(['foo' => 'bar'], $repository->get('tasks'));
+        $this->assertSame(['option' => 'value'], $repository->get('task'));
+        $this->assertSame([], $repository->get('ignore'));
+    }
+
+    #[Test]
+    public function it_loads_and_merges_values_from_config_file()
+    {
+        $repository = new \Shift\Cli\Sdk\Support\ConfigurationRepository('tests/fixtures/config/overwrite.json');
+        $repository->setDefaultTasks(['foo' => 'bar'], ['task-option' => ['overwrite' => 'me', 'base' => 'value']]);
+
+        $this->assertSame(['foo' => 'bar'], $repository->get('tasks'));
+        $this->assertSame(['overwrite' => 'foo', 'base' => 'value', 'new' => 'value'], $repository->get('task-option'));
         $this->assertSame(
             [
                 'tests/fixtures/',
@@ -56,6 +68,7 @@ class ConfigurationRepositoryTest extends TestCase
         $repository = new \Shift\Cli\Sdk\Support\ConfigurationRepository('tests/fixtures/config/empty-tasks.json');
 
         $this->assertSame([], $repository->get('tasks'));
+        $this->assertSame(['option' => 'value'], $repository->get('task-option'));
         $this->assertSame(['example.php'], $repository->get('ignore'));
     }
 

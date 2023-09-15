@@ -3,5 +3,9 @@
         "tests/fixtures/",
         "resources/templates/*.blade.php",
         "example.php"
-    ]
+    ],
+    "task-option": {
+        "overwrite": "foo",
+        "new": "value"
+    }
 }

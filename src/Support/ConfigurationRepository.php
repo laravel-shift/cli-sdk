@@ -10,6 +10,8 @@ class ConfigurationRepository
 
     private array $tasks = [];
 
+    private array $options = [];
+
     public function __construct(string $path = null)
     {
         if ($path) {
@@ -31,12 +33,13 @@ class ConfigurationRepository
 
     public function defaults(): array
     {
-        return ['tasks' => $this->tasks, 'ignore' => []];
+        return array_merge(['tasks' => $this->tasks, 'ignore' => []], $this->options);
     }
 
-    public function setDefaultTasks(array $tasks): void
+    public function setDefaultTasks(array $tasks, array $options = []): void
     {
         $this->tasks = $tasks;
+        $this->options = $options;
     }
 
     private function load(): array
@@ -50,6 +53,6 @@ class ConfigurationRepository
             throw new \RuntimeException("The configuration file ({$this->path}) contains invalid JSON.");
         }
 
-        return array_replace($this->defaults(), $configuration);
+        return array_replace_recursive($this->defaults(), $configuration);
     }
 }
