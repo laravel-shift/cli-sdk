@@ -84,7 +84,7 @@ class Reflector
 
         if (is_null($namespaces) || defined('RUNNING_TESTS')) {
             $composer = json_decode(file_get_contents('composer.json'), true);
-            $namespaces = $composer['autoload']['psr-4'] ?? [];
+            $namespaces = array_merge($composer['autoload-dev']['psr-4'] ?? [], $composer['autoload']['psr-4'] ?? []);
         }
 
         return $namespaces;
