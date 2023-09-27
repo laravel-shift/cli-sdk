@@ -38,7 +38,7 @@ trait FindsFiles
             throw new \RuntimeException('The [--dirty] option is only available when using Git.');
         }
 
-        return collect(preg_split('/\R+/', $process->getOutput(), flags: PREG_SPLIT_NO_EMPTY))
+        return \collect(preg_split('/\R+/', $process->getOutput(), flags: PREG_SPLIT_NO_EMPTY))
             ->mapWithKeys(fn ($file) => [substr($file, 3) => trim(substr($file, 0, 3))])
             ->reject(fn ($status) => $status === 'D')
             ->map(fn ($status, $file) => $status === 'R' ? Str::after($file, ' -> ') : $file)

@@ -3,6 +3,12 @@
     "rules": {
         "concat_space": {
             "spacing": "one"
+        },
+        "native_function_invocation": {
+            "include": [
+                "collect",
+                "data_get"
+            ]
         }
     },
     "exclude": [

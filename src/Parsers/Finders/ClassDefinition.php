@@ -111,7 +111,7 @@ class ClassDefinition
 
     private function getParameters(array $parameters): array
     {
-        return collect($parameters)
+        return \collect($parameters)
             ->mapWithKeys(function (Node\Param $parameter) {
                 return [
                     $parameter->var->name => [

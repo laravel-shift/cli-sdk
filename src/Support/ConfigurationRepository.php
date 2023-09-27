@@ -21,7 +21,7 @@ class ConfigurationRepository
 
     public function get($key, $default = null)
     {
-        return data_get($this->data(), $key, $default);
+        return \data_get($this->data(), $key, $default);
     }
 
     private function data(): array

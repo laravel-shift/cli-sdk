@@ -35,7 +35,7 @@ class FormRequestStringRulesFinder
 
     private function getValues(Node\Expr\Array_ $node)
     {
-        $one = collect($node->items)
+        $one = \collect($node->items)
             ->filter(function ($item) {
                 return $item->key instanceof Node\Scalar\String_
                     && $item->value instanceof Node\Expr\BinaryOp\Concat;
@@ -49,7 +49,7 @@ class FormRequestStringRulesFinder
             })
             ->all();
 
-        $two = collect($node->items)
+        $two = \collect($node->items)
             ->filter(function ($item) {
                 return $item->key instanceof Node\Scalar\String_
                     && $item->value instanceof Node\Scalar\String_;
