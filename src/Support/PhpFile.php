@@ -15,7 +15,7 @@ class PhpFile
 
         $finder ??= new NikicParser(new ImportFinder());
 
-        return $finder->parse(file_get_contents($path));
+        return $finder->parse(\file_get_contents($path));
     }
 
     public static function findImport(string $fqcn, string $path): ?array
@@ -41,15 +41,15 @@ class PhpFile
         $content = 'use ' . $fqcn . ';' . PHP_EOL;
 
         if ($imports) {
-            $line = current($imports)['line']['start'] - 1;
+            $line = \current($imports)['line']['start'] - 1;
         } else {
             $line = 1;
             $content = PHP_EOL . $content;
 
-            $tokens = token_get_all($file->contents());
+            $tokens = \token_get_all($file->contents());
 
             $index = self::findToken(T_NAMESPACE, $tokens);
-            if ($index !== false && str_starts_with($file->line($tokens[$index][2]), 'namespace')) {
+            if ($index !== false && \str_starts_with($file->line($tokens[$index][2]), 'namespace')) {
                 $line = $tokens[$index][2];
             } else {
                 $index = self::findToken(T_OPEN_TAG, $tokens);
@@ -60,7 +60,7 @@ class PhpFile
         }
 
         $file->insert($line, $content);
-        file_put_contents($path, $file->contents());
+        \file_put_contents($path, $file->contents());
 
         return true;
     }
@@ -77,7 +77,7 @@ class PhpFile
 
         $file = File::fromPath($path);
         $file->removeSegment($import['line']['start'], $import['line']['end']);
-        file_put_contents($path, $file->contents());
+        \file_put_contents($path, $file->contents());
 
         return true;
     }
@@ -87,11 +87,11 @@ class PhpFile
      */
     public static function findClosingParenthesis(int $position, string $contents): int
     {
-        $characters = str_split($contents);
+        $characters = \str_split($contents);
         $ignoreUntil = [];
         $comment = false;
 
-        for ($i = $position + 1; $i < count($characters); $i++) {
+        for ($i = $position + 1; $i < \count($characters); $i++) {
             if ($comment === false && empty($ignoreUntil) && $characters[$i] === '/' && $characters[$i + 1] === '/') {
                 $comment = 'single';
 
@@ -105,7 +105,7 @@ class PhpFile
             }
 
             if ($comment === 'single') {
-                if (preg_match('/\R/', $characters[$i])) {
+                if (\preg_match('/\R/', $characters[$i])) {
                     $comment = false;
                 }
 
@@ -120,8 +120,8 @@ class PhpFile
                 continue;
             }
 
-            if ($characters[$i] === end($ignoreUntil) && $characters[$i - 1] !== '\\') {
-                array_pop($ignoreUntil);
+            if ($characters[$i] === \end($ignoreUntil) && $characters[$i - 1] !== '\\') {
+                \array_pop($ignoreUntil);
 
                 continue;
             }
@@ -149,7 +149,7 @@ class PhpFile
 
     private static function findToken($token, array $tokens, int $offset = 0)
     {
-        for ($i = $offset; $i < count($tokens); $i++) {
+        for ($i = $offset; $i < \count($tokens); $i++) {
             if ($tokens[$i][0] === $token) {
                 return $i;
             }

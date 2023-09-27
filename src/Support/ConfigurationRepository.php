@@ -33,7 +33,7 @@ class ConfigurationRepository
 
     public function defaults(): array
     {
-        return array_merge(['tasks' => $this->tasks, 'ignore' => []], $this->options);
+        return \array_merge(['tasks' => $this->tasks, 'ignore' => []], $this->options);
     }
 
     public function setDefaultTasks(array $tasks, array $options = []): void
@@ -44,15 +44,15 @@ class ConfigurationRepository
 
     private function load(): array
     {
-        if (! file_exists($this->path)) {
+        if (! \file_exists($this->path)) {
             return $this->defaults();
         }
 
-        $configuration = json_decode(file_get_contents($this->path), true);
-        if (! is_array($configuration)) {
+        $configuration = \json_decode(\file_get_contents($this->path), true);
+        if (! \is_array($configuration)) {
             throw new \RuntimeException("The configuration file ({$this->path}) contains invalid JSON.");
         }
 
-        return array_replace_recursive($this->defaults(), $configuration);
+        return \array_replace_recursive($this->defaults(), $configuration);
     }
 }

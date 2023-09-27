@@ -17,6 +17,6 @@ class Reflector extends Facade
 
     protected static function getInstance()
     {
-        return new \Shift\Cli\Sdk\Support\Reflector(getcwd());
+        return new \Shift\Cli\Sdk\Support\Reflector(\getcwd());
     }
 }

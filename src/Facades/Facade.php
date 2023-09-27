@@ -55,7 +55,7 @@ abstract class Facade
      */
     protected static function resolveFacadeInstance($name)
     {
-        if (is_object($name)) {
+        if (\is_object($name)) {
             return $name;
         }
 

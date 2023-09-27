@@ -24,22 +24,22 @@ trait FindsFiles
 
     protected function findFilesContaining(string $pattern): array
     {
-        return array_filter(
+        return \array_filter(
             $this->findFiles(),
-            fn ($file) => preg_match($pattern, file_get_contents($file))
+            fn ($file) => \preg_match($pattern, \file_get_contents($file))
         );
     }
 
     protected function dirtyFiles(): array
     {
-        $process = tap(new Process(['git', 'status', '--short', '--', '*.php']))->run();
+        $process = \tap(new Process(['git', 'status', '--short', '--', '*.php']))->run();
 
         if (! $process->isSuccessful()) {
             throw new \RuntimeException('The [--dirty] option is only available when using Git.');
         }
 
-        return \collect(preg_split('/\R+/', $process->getOutput(), flags: PREG_SPLIT_NO_EMPTY))
-            ->mapWithKeys(fn ($file) => [substr($file, 3) => trim(substr($file, 0, 3))])
+        return \collect(\preg_split('/\R+/', $process->getOutput(), flags: PREG_SPLIT_NO_EMPTY))
+            ->mapWithKeys(fn ($file) => [\substr($file, 3) => \trim(\substr($file, 0, 3))])
             ->reject(fn ($status) => $status === 'D')
             ->map(fn ($status, $file) => $status === 'R' ? Str::after($file, ' -> ') : $file)
             ->values()
@@ -51,7 +51,7 @@ trait FindsFiles
         $finder = (new Finder())->files();
 
         if (! empty($this->paths)) {
-            $directories = array_filter($this->paths, fn ($path) => is_dir($path));
+            $directories = \array_filter($this->paths, fn ($path) => \is_dir($path));
 
             if (empty($directories)) {
                 return $this->paths;
@@ -59,19 +59,19 @@ trait FindsFiles
 
             $finder->in($directories);
 
-            $files = array_diff($this->paths, $directories);
+            $files = \array_diff($this->paths, $directories);
             if (! empty($files)) {
                 $finder->append($files);
             }
         } else {
             $finder->exclude('vendor')
-                ->in(rtrim(getcwd() . DIRECTORY_SEPARATOR . $this->subPath(), DIRECTORY_SEPARATOR))
+                ->in(\rtrim(\getcwd() . DIRECTORY_SEPARATOR . $this->subPath(), DIRECTORY_SEPARATOR))
                 ->notPath(Configuration::get('ignore', []))
                 ->name('*.php')
-                ->ignoreVCSIgnored(! defined('RUNNING_TESTS'));
+                ->ignoreVCSIgnored(! \defined('RUNNING_TESTS'));
         }
 
-        return array_map(fn ($file) => $file->getRealPath(), iterator_to_array($finder, false));
+        return \array_map(fn ($file) => $file->getRealPath(), \iterator_to_array($finder, false));
     }
 
     public function setPaths(array $paths): void

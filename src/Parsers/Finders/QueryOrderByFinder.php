@@ -30,7 +30,7 @@ class QueryOrderByFinder
             return false;
         }
 
-        if (($this->requires_direction || count($node->args) > 1) && ! $this->passesExplicitDirection($node)) {
+        if (($this->requires_direction || \count($node->args) > 1) && ! $this->passesExplicitDirection($node)) {
             return false;
         }
 
@@ -44,11 +44,11 @@ class QueryOrderByFinder
         foreach ($instances as $instance) {
             $data = [
                 'line' => ['start' => $instance->getAttribute('startLine'), 'end' => $instance->getAttribute('endLine')],
-                'method' => strtolower($instance->name->name),
+                'method' => \strtolower($instance->name->name),
             ];
 
-            if (! $this->check_multiple_columns && count($instance->args) > 1) {
-                $data['direction'] = strtoupper($instance->args[1]->value->value);
+            if (! $this->check_multiple_columns && \count($instance->args) > 1) {
+                $data['direction'] = \strtoupper($instance->args[1]->value->value);
             }
 
             $output[] = $data;
@@ -59,16 +59,16 @@ class QueryOrderByFinder
 
     private function passesExplicitDirection(Node $node)
     {
-        if (! property_exists($node, 'args')) {
+        if (! \property_exists($node, 'args')) {
             return false;
         }
 
-        if (count($node->args) < 2) {
+        if (\count($node->args) < 2) {
             return false;
         }
 
         if ($node->args[1]->value->getType() === 'Scalar_String') {
-            return in_array(strtolower($node->args[1]->value->value), ['asc', 'desc']);
+            return \in_array(\strtolower($node->args[1]->value->value), ['asc', 'desc']);
         }
 
         return false;
@@ -76,16 +76,16 @@ class QueryOrderByFinder
 
     private function passesMultipleColumns(Node $node)
     {
-        if (! property_exists($node, 'args')) {
+        if (! \property_exists($node, 'args')) {
             return false;
         }
 
-        if (count($node->args) < 2) {
+        if (\count($node->args) < 2) {
             return false;
         }
 
         if ($node->args[1]->value->getType() === 'Scalar_String') {
-            return ! in_array(strtolower($node->args[1]->value->value), ['asc', 'desc']);
+            return ! \in_array(\strtolower($node->args[1]->value->value), ['asc', 'desc']);
         }
 
         return true;
@@ -93,6 +93,6 @@ class QueryOrderByFinder
 
     private function isOrderByCall($name)
     {
-        return in_array(strtolower($name), ['orderby', 'orderbydesc']);
+        return \in_array(\strtolower($name), ['orderby', 'orderbydesc']);
     }
 }

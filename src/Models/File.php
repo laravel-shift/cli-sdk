@@ -15,17 +15,17 @@ class File
     private function __construct(array $lines)
     {
         $this->lines = $lines;
-        $this->count = count($lines);
+        $this->count = \count($lines);
     }
 
     public static function fromPath(string $path): static
     {
-        return new self(file($path));
+        return new self(\file($path));
     }
 
     public static function fromString(string $string, $newlines_only = false): static
     {
-        return new self(preg_split(
+        return new self(\preg_split(
             '/(?<=' . ($newlines_only ? '\n' : '\r\n|\r|\n') . ')/',
             $string,
             flags: PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY
@@ -41,20 +41,20 @@ class File
 
     public function contents(): string
     {
-        return implode($this->lines);
+        return \implode($this->lines);
     }
 
     public function lineAtCharacter(int $offset): int
     {
         // This only works when contents have not been manipulated.
         // For example, by calling `insert` with multiple lines.
-        return substr_count($this->contents(), PHP_EOL, 0, $offset) + 1;
+        return \substr_count($this->contents(), PHP_EOL, 0, $offset) + 1;
     }
 
     public function find(string $needle, int $offset = 1): int|bool
     {
         for ($line = $offset; $line < $this->count; $line++) {
-            if (str_contains($this->lines[$line - 1], $needle)) {
+            if (\str_contains($this->lines[$line - 1], $needle)) {
                 return $line;
             }
         }
@@ -74,8 +74,8 @@ class File
 
     public function removeLine(int $number): void
     {
-        array_splice($this->lines, $number - 1, 1);
-        $this->count = count($this->lines);
+        \array_splice($this->lines, $number - 1, 1);
+        $this->count = \count($this->lines);
         $this->dirty();
     }
 
@@ -87,8 +87,8 @@ class File
             return;
         }
 
-        array_splice($this->lines, $start - 1, $end - $start + 1);
-        $this->count = count($this->lines);
+        \array_splice($this->lines, $start - 1, $end - $start + 1);
+        $this->count = \count($this->lines);
         $this->dirty();
     }
 
@@ -103,10 +103,10 @@ class File
         }
 
         if ($end > $this->count) {
-            return implode(array_slice($this->lines, $start - 1));
+            return \implode(\array_slice($this->lines, $start - 1));
         }
 
-        return implode(array_slice($this->lines, $start - 1, $end - $start + 1));
+        return \implode(\array_slice($this->lines, $start - 1, $end - $start + 1));
     }
 
     public function replaceSegment(int $start, int $end, string $content = ''): void
@@ -117,21 +117,21 @@ class File
             return;
         }
 
-        array_splice($this->lines, $start, $end - $start);
-        $this->count = count($this->lines);
+        \array_splice($this->lines, $start, $end - $start);
+        $this->count = \count($this->lines);
         $this->dirty();
     }
 
     public function insert(int $start, string $content): void
     {
-        array_splice($this->lines, $start, 0, $content);
-        $this->count = count($this->lines);
+        \array_splice($this->lines, $start, 0, $content);
+        $this->count = \count($this->lines);
         $this->dirty();
     }
 
     public function removeBlankLinesAround(int $number): void
     {
-        if (trim($this->line($number - 1)) === '') {
+        if (\trim($this->line($number - 1)) === '') {
             $this->removeBlankLinesBefore($number);
 
             return;
@@ -142,7 +142,7 @@ class File
 
     public function removeBlankLinesBefore(int $start): void
     {
-        while (trim($this->line($start - 1)) === '') {
+        while (\trim($this->line($start - 1)) === '') {
             $this->removeLine($start - 1);
             $start--;
         }
@@ -150,7 +150,7 @@ class File
 
     public function removeBlankLinesAfter(int $start): void
     {
-        while ($start < $this->count && trim($this->line($start + 1)) === '') {
+        while ($start < $this->count && \trim($this->line($start + 1)) === '') {
             $this->removeLine($start + 1);
         }
     }

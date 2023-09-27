@@ -24,7 +24,7 @@ class Comment
 
     public function hasPaths(): bool
     {
-        return count($this->paths) > 0;
+        return \count($this->paths) > 0;
     }
 
     public function hasReference(): bool
@@ -34,8 +34,8 @@ class Comment
 
     public function paths(): array
     {
-        return array_map(
-            fn ($path) => str_starts_with($path, getcwd()) ? substr($path, strlen(getcwd() . DIRECTORY_SEPARATOR)) : $path,
+        return \array_map(
+            fn ($path) => \str_starts_with($path, \getcwd()) ? \substr($path, \strlen(\getcwd() . DIRECTORY_SEPARATOR)) : $path,
             $this->paths
         );
     }

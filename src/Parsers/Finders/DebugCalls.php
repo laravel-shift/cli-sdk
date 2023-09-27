@@ -16,12 +16,12 @@ class DebugCalls
             return false;
         }
 
-        if (! in_array($node->name->toLowerString(), ['var_dump', 'var_export', 'dd', 'dump', 'print_r'])) {
+        if (! \in_array($node->name->toLowerString(), ['var_dump', 'var_export', 'dd', 'dump', 'print_r'])) {
             return false;
         }
 
-        if (in_array($node->name->toLowerString(), ['var_export', 'print_r'])
-            && count($node->args) === 2
+        if (\in_array($node->name->toLowerString(), ['var_export', 'print_r'])
+            && \count($node->args) === 2
             && $node->args[1]->value instanceof Node\Expr\ConstFetch
             && $node->args[1]->value->name->toLowerString() === 'true') {
             return false;

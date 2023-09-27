@@ -19,14 +19,14 @@ trait InteractsWithProject
             $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(self::snapshotsPath()), \RecursiveIteratorIterator::CHILD_FIRST);
 
             foreach ($files as $file) {
-                if (in_array($file->getBasename(), ['.', '..', '.gitignore'])) {
+                if (\in_array($file->getBasename(), ['.', '..', '.gitignore'])) {
                     continue;
                 }
 
                 if ($file->isDir()) {
-                    rmdir($file->getPathName());
+                    \rmdir($file->getPathName());
                 } elseif ($file->isFile() || $file->isLink()) {
-                    unlink($file->getPathname());
+                    \unlink($file->getPathname());
                 }
             }
 
@@ -39,7 +39,7 @@ trait InteractsWithProject
     protected function tearDown(): void
     {
         if (isset($this->cwd)) {
-            chdir($this->cwd);
+            \chdir($this->cwd);
         }
 
         parent::tearDown();
@@ -68,43 +68,43 @@ EOT;
         $this->structure = $structure;
 
         $project = $this->currentSnapshotPath();
-        mkdir($project);
+        \mkdir($project);
 
         if (! empty($autoload)) {
             $classmap = [];
             foreach ($autoload as $fqcn => $fixture) {
-                $fake = preg_replace('/\W+/', '_', Str::before($fqcn, '.php')) . '.php';
+                $fake = \preg_replace('/\W+/', '_', Str::before($fqcn, '.php')) . '.php';
                 $structure['vendor/fakes/' . $fake] = $fixture;
                 $classmap[$fqcn] = $fake;
             }
 
-            $structure = array_merge($structure, [
+            $structure = \array_merge($structure, [
                 'composer.json' => $this->composerStub(),
                 'vendor/autoload.php' => $this->autoloaderStub(),
-                'vendor/fake-classmap.json' => json_encode($classmap, JSON_PRETTY_PRINT),
+                'vendor/fake-classmap.json' => \json_encode($classmap, JSON_PRETTY_PRINT),
             ]);
         }
 
         foreach ($structure as $src => $fixture) {
-            if (! is_dir($project . DIRECTORY_SEPARATOR . dirname($src))) {
-                mkdir($project . DIRECTORY_SEPARATOR . dirname($src), recursive: true);
+            if (! \is_dir($project . DIRECTORY_SEPARATOR . \dirname($src))) {
+                \mkdir($project . DIRECTORY_SEPARATOR . \dirname($src), recursive: true);
             }
 
-            if (str_starts_with($fixture, 'tests/fixtures/')) {
+            if (\str_starts_with($fixture, 'tests/fixtures/')) {
                 Assert::assertFileExists($this->fixturePath($fixture));
-                copy($this->fixturePath($fixture), $project . DIRECTORY_SEPARATOR . $src);
+                \copy($this->fixturePath($fixture), $project . DIRECTORY_SEPARATOR . $src);
             } else {
-                file_put_contents($project . DIRECTORY_SEPARATOR . $src, $fixture);
+                \file_put_contents($project . DIRECTORY_SEPARATOR . $src, $fixture);
             }
         }
 
-        $this->cwd = getcwd();
-        chdir($this->currentSnapshotPath());
+        $this->cwd = \getcwd();
+        \chdir($this->currentSnapshotPath());
     }
 
     public function assertFileChanges(string $expected, string $actual): void
     {
-        if (str_starts_with($expected, 'tests/fixtures/')) {
+        if (\str_starts_with($expected, 'tests/fixtures/')) {
             Assert::assertFileEquals($this->fixturePath($expected), $actual);
 
             return;
@@ -118,7 +118,7 @@ EOT;
         Assert::assertArrayHasKey($actual, $this->structure, 'Failed asserting original file existed');
         $expected = $this->structure[$actual];
 
-        if (str_starts_with($expected, 'tests/fixtures/')) {
+        if (\str_starts_with($expected, 'tests/fixtures/')) {
             Assert::assertFileEquals($this->fixturePath($expected), $actual, 'Failed asserting there were no file changes');
 
             return;
@@ -146,8 +146,8 @@ EOT;
     private function currentSnapshotPath(): string
     {
         if (! isset($this->uid)) {
-            $caller = debug_backtrace(0, 3)[2];
-            $this->uid = md5($caller['class'] . '::' . $caller['function'] . '::' . serialize($caller['args']));
+            $caller = \debug_backtrace(0, 3)[2];
+            $this->uid = \md5($caller['class'] . '::' . $caller['function'] . '::' . \serialize($caller['args']));
         }
 
         return self::snapshotsPath() . DIRECTORY_SEPARATOR . $this->uid;
@@ -162,7 +162,7 @@ EOT;
     {
         static $path;
 
-        $path ??= dirname(__DIR__, 5);
+        $path ??= \dirname(__DIR__, 5);
 
         return $path;
     }
@@ -190,7 +190,7 @@ EOT;
 
     private function composerStub(): string
     {
-        return json_encode(
+        return \json_encode(
             [
                 'autoload' => [
                     'psr-4' => [

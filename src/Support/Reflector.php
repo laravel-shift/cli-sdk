@@ -21,27 +21,27 @@ class Reflector
 
     public function fqcnFromPath($path): ?string
     {
-        if (str_starts_with($path, $this->cwd . DIRECTORY_SEPARATOR)) {
-            $path = substr($path, strlen($this->cwd . DIRECTORY_SEPARATOR));
+        if (\str_starts_with($path, $this->cwd . DIRECTORY_SEPARATOR)) {
+            $path = \substr($path, \strlen($this->cwd . DIRECTORY_SEPARATOR));
         }
 
         [$source, $namespace] = $this->findNamespace($path);
 
-        if (is_null($source)) {
+        if (\is_null($source)) {
             return null;
         }
 
-        return str_replace(
+        return \str_replace(
             [$source, DIRECTORY_SEPARATOR],
             [$namespace, '\\'],
-            substr($path, 0, -4)
+            \substr($path, 0, -4)
         );
     }
 
     public function classFromPath(string $path): ?\ReflectionClass
     {
         $fqcn = $this->fqcnFromPath($path);
-        if (is_null($fqcn)) {
+        if (\is_null($fqcn)) {
             return null;
         }
 
@@ -58,7 +58,7 @@ class Reflector
     {
         $this->autoloaded = true;
 
-        if (file_exists($this->cwd . '/vendor/autoload.php')) {
+        if (\file_exists($this->cwd . '/vendor/autoload.php')) {
             require_once $this->cwd . '/vendor/autoload.php';
         }
     }
@@ -69,7 +69,7 @@ class Reflector
 
         foreach ($namespaces as $namespace => $sources) {
             foreach (Arr::wrap($sources) as $source) {
-                if (str_starts_with($path, $source)) {
+                if (\str_starts_with($path, $source)) {
                     return [$source, $namespace];
                 }
             }
@@ -82,9 +82,9 @@ class Reflector
     {
         static $namespaces;
 
-        if (is_null($namespaces) || defined('RUNNING_TESTS')) {
-            $composer = json_decode(file_get_contents('composer.json'), true);
-            $namespaces = array_merge($composer['autoload-dev']['psr-4'] ?? [], $composer['autoload']['psr-4'] ?? []);
+        if (\is_null($namespaces) || \defined('RUNNING_TESTS')) {
+            $composer = \json_decode(\file_get_contents('composer.json'), true);
+            $namespaces = \array_merge($composer['autoload-dev']['psr-4'] ?? [], $composer['autoload']['psr-4'] ?? []);
         }
 
         return $namespaces;
