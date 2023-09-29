@@ -23,12 +23,12 @@ class File
         return new self(\file($path));
     }
 
-    public static function fromString(string $string, $newlines_only = false): static
+    public static function fromString(string $string): static
     {
         return new self(\preg_split(
-            '/(?<=' . ($newlines_only ? '\n' : '\r\n|\r|\n') . ')/',
+            '/(?<=\n)/',
             $string,
-            flags: PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY
+            flags: PREG_SPLIT_DELIM_CAPTURE
         ));
     }
 
