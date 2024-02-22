@@ -1,12 +1,20 @@
 {
     "name": "laravel-shift/cli-sdk",
     "description": "The SDK for developing automated tasks for the Shift CLI",
-    "keywords": ["shift", "laravel", "php", "code", "refactor", "automation", "cli"],
+    "keywords": [
+        "shift",
+        "laravel",
+        "php",
+        "code",
+        "refactor",
+        "automation",
+        "cli"
+    ],
     "license": "MIT",
     "require": {
         "php": "^8.1",
-        "illuminate/support": "^10.18",
-        "nikic/php-parser": "^4.15",
+        "illuminate/support": "^10.18|^11.0",
+        "nikic/php-parser": "^4.15|^5.0",
         "symfony/finder": "^6.3",
         "symfony/process": "^6.3"
     },
